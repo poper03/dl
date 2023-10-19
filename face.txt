@@ -1,0 +1,20 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+     
+
+fa=cv2.CascadeClassifier('/content/face.xml')
+     
+
+#importing the image
+
+img = cv2.imread('/content/anupama-parameswaran-goes-desi-in-kanjivaram-silk-saree-3.jpg')
+img2 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+plt.imshow(img2)
+
+face_img = img2.copy()
+face_rect = fa.detectMultiScale(face_img,scaleFactor = 1.2, minNeighbors = 10)
+for (x,y,w,h) in face_rect:
+  cv2.rectangle(face_img,(x,y),(x+w,y+h),(245,3,0),4)
+plt.imshow(face_img)

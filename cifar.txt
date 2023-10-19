@@ -1,0 +1,94 @@
+import numpy as np
+import tensorflow as tf
+import keras
+from keras.datasets import cifar10
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
+import matplotlib.pyplot as plt
+from tensorflow.keras.utils import to_categorical
+import warnings
+warnings.filterwarnings('ignore')
+
+#Importing data
+(x_train,y_train),(x_test,y_test) = cifar10.load_data()
+print(f"x_train shape: {x_train.shape}")
+print(f"y_train shape: {y_train.shape}")
+print(f"x_test shape: {x_test.shape}")
+print(f"y_test shape: {y_test.shape}")
+
+# Define the labels of the dataset
+labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+
+#visulaization
+fig, axes = plt.subplots(10,10, figsize = (17,17))
+axes = axes.ravel()
+n_train = len(x_train)
+for i in np.arange(0, 100):
+index = np.random.randint(0,n_train)
+axes[i].imshow(x_train[index,1:])
+label_index = int(y_train[index])
+axes[i].set_title(labels[label_index], fontsize = 8)
+axes[i].axis('off')
+plt.subplots_adjust(hspace=0.4)
+
+print('label:',labels[int(y_train[666])])
+plt.figure(figsize=(.8,1))
+plt.imshow(x_train[666,1:])
+plt.show()
+
+classes, counts = np.unique(y_train, return_counts=True)
+plt.barh(labels, counts)
+plt.title('Class distribution in training set')
+
+classes, counts = np.unique(y_test, return_counts=True)
+plt.barh(labels, counts)
+plt.title('Class distribution in testing set')
+
+#normalize values 0 to 1 range
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train /= 255
+x_test /= 255
+
+y_train = to_categorical(y_train, 10)
+y_test = to_categorical(y_test, 10)
+
+num_classes = 10
+
+#model creation
+model = Sequential()
+model.add(Conv2D(8,kernel_size=(3,3),activation='relu',input_shape=(32,32,3)))
+model.add(Conv2D(filters=16, kernel_size=(3,3), activation = 'relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(32,activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='softmax'))
+model.summary()
+
+#model compilation
+model.compile(loss=keras.losses.categorical_crossentropy,optimizer=tf.keras.optimizers.Adam()
+,metrics=['accuracy'])
+
+model.fit(x_train,y_train,batch_size=100,epochs=50,verbose=1,validation_data=(x_test,y_test))
+
+#model evaluation
+score = model.evaluate(x_test,y_test,verbose=0)
+print('Test Loss: ',score[0])
+print('Test Accuracy: ', score[1])
+
+#Visualize and evaluate
+plt.imshow(x_test[856])
+
+threshold=[]
+for i in prediction[0]:
+if i==max(prediction[0]):
+threshold.append(1)
+else:
+threshold.append(0)
+thresholded=threshold
+thresholded=np.array(thresholded)
+print('\n Thresholded score: \n',thresholded)
+im_index = np.where(thresholded==1)
+print('Predicted image: \n', labels[im_index[0][0]])
